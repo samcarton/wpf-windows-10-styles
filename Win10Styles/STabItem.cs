@@ -29,11 +29,17 @@ namespace Win10Styles
         Storyboard _selectedStoryboard;
         Storyboard _unselectedStoryboard;
 
+        /// <summary>
+        /// Static constructor.
+        /// </summary>
         static STabItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(STabItem), new FrameworkPropertyMetadata(typeof(STabItem)));
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public STabItem()
         {            
             DependencyPropertyDescriptor
@@ -43,11 +49,19 @@ namespace Win10Styles
             UpdateTabStripPlacementVisuals();
         }
 
+        /// <summary>
+        /// Called when the Tab Strip placement property has changed.
+        /// </summary>
+        /// <param name="sender">The sending object.</param>
+        /// <param name="e">The event arguments.</param>
         void OnTabStribPlacementChanged(object sender, EventArgs e)
         {
             UpdateTabStripPlacementVisuals();
         }
 
+        /// <summary>
+        /// Update the Tab Strip placement visuals depending on tab strip placement.
+        /// </summary>
          void UpdateTabStripPlacementVisuals()
         {
             switch (TabStripPlacement)
@@ -55,26 +69,29 @@ namespace Win10Styles
                 case Dock.Left:
                     SetSelectedBorderThickness(new Thickness(4, 0, 0, 0));
                     SetOuterBorderThickness(new Thickness(0));
-                    SetStoryboardTargetProperties(ScaleTransform.ScaleYProperty);
+                    SetStoryboardScaleDimensionTargetProperties(ScaleTransform.ScaleYProperty);
                     break;
                 case Dock.Top:
                     SetSelectedBorderThickness(new Thickness(0, 4, 0, 0));
                     SetOuterBorderThickness(new Thickness(0, 0, 1, 0));
-                    SetStoryboardTargetProperties(ScaleTransform.ScaleXProperty);
+                    SetStoryboardScaleDimensionTargetProperties(ScaleTransform.ScaleXProperty);
                     break;
                 case Dock.Right:
                     SetSelectedBorderThickness(new Thickness(0, 0, 4,0));
                     SetOuterBorderThickness(new Thickness(0));
-                    SetStoryboardTargetProperties(ScaleTransform.ScaleYProperty);
+                    SetStoryboardScaleDimensionTargetProperties(ScaleTransform.ScaleYProperty);
                     break;
                 case Dock.Bottom:
                     SetSelectedBorderThickness(new Thickness(0, 0, 0, 4));
                     SetOuterBorderThickness(new Thickness(0, 0, 1, 0));
-                    SetStoryboardTargetProperties(ScaleTransform.ScaleXProperty);
+                    SetStoryboardScaleDimensionTargetProperties(ScaleTransform.ScaleXProperty);
                     break;
             }
         }
 
+        /// <summary>
+        /// Called when the template is applied.
+        /// </summary>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -87,6 +104,10 @@ namespace Win10Styles
             UpdateTabStripPlacementVisuals();
         }
 
+        /// <summary>
+        /// Called when the left mouse button is pressed down.
+        /// </summary>
+        /// <param name="e">The event args.</param>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             if (e.Source == this)
@@ -99,6 +120,10 @@ namespace Win10Styles
             base.OnMouseLeftButtonDown(e);
         }
 
+        /// <summary>
+        /// Called when the left mouse button is released.
+        /// </summary>
+        /// <param name="e">The event args.</param>
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             if (e.Source == this)
@@ -114,6 +139,10 @@ namespace Win10Styles
             base.OnMouseLeftButtonUp(e);
         }
 
+        /// <summary>
+        /// Called when the mouse leaves the control.
+        /// </summary>
+        /// <param name="e">The event args.</param>
         protected override void OnMouseLeave(MouseEventArgs e)
         {
             IsPressed = false;
@@ -121,6 +150,9 @@ namespace Win10Styles
             base.OnMouseLeave(e);
         }
 
+        /// <summary>
+        /// Update the visual state of the control.
+        /// </summary>
         protected virtual void UpdateVisualState()
         {
             VisualStateManager.GoToState(
@@ -131,6 +163,10 @@ namespace Win10Styles
                 false);
         }
 
+        /// <summary>
+        /// Set the selected border thicknes.
+        /// </summary>
+        /// <param name="thickness">The thickness to make the selected border.</param>
         void SetSelectedBorderThickness(Thickness thickness)
         {
             if (_selectedBorder == null)
@@ -141,6 +177,10 @@ namespace Win10Styles
             _selectedBorder.BorderThickness = thickness;
         }
 
+        /// <summary>
+        /// Set the outer border thicknes..
+        /// </summary>
+        /// <param name="thickness">The thickness to set the outer border.</param>
         void SetOuterBorderThickness(Thickness thickness)
         {
             if(_outerBorder == null)
@@ -151,19 +191,27 @@ namespace Win10Styles
             _outerBorder.BorderThickness = thickness;
         }
 
-        void SetStoryboardTargetProperties(DependencyProperty dependencyProperty)
+        /// <summary>
+        /// Set the storyboard scale dimension target properties. 
+        /// Dependency property needs to change from Scale X to Scale Y depending on the tab strip placement.
+        /// </summary>
+        /// <param name="scaleDimensionDependencyProperty">The scale dimension dependency property.</param>
+        void SetStoryboardScaleDimensionTargetProperties(DependencyProperty scaleDimensionDependencyProperty)
         {
             if (_selectedStoryboard != null && _selectedStoryboard.Children.Any())
             {
-                Storyboard.SetTargetProperty(_selectedStoryboard.Children[0], new PropertyPath(dependencyProperty));
+                Storyboard.SetTargetProperty(_selectedStoryboard.Children[0], new PropertyPath(scaleDimensionDependencyProperty));
             }
 
             if (_unselectedStoryboard != null && _unselectedStoryboard.Children.Any())
             {
-                Storyboard.SetTargetProperty(_unselectedStoryboard.Children[0], new PropertyPath(dependencyProperty));
+                Storyboard.SetTargetProperty(_unselectedStoryboard.Children[0], new PropertyPath(scaleDimensionDependencyProperty));
             }
         }
 
+        /// <summary>
+        /// Flag indicating if the control being is pressed or not.
+        /// </summary>
         public bool IsPressed
         {
             get { return (bool)GetValue(IsPressedProperty); }
